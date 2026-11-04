@@ -14,6 +14,7 @@ Each skill uses the directory-based Agent Skills format. Instructions use host c
 | [verify-result](skills/gstack-verify-result/SKILL.md) | Manually verify observable results. Experimental; pilots show no correctness gain over the tested baseline. |
 | [bug-fix](skills/gstack-bug-fix/SKILL.md) | Manually reproduce, diagnose, fix, and verify a defect. Draft; requires the sibling verify-result skill. |
 | [reflect](skills/gstack-reflect/SKILL.md) | Extract lessons from real work and propose targeted skill edits. Changes require approval. |
+| [create-skill](skills/gstack-create-skill/SKILL.md) | Create or update a focused skill, check its artifact, and route warranted behavior comparisons to Eval. Draft. |
 
 ## Install locally
 
@@ -30,7 +31,7 @@ Each skill uses the directory-based Agent Skills format. Instructions use host c
    (
      set -eu
      for base in "$HOME/.claude/skills" "$HOME/.agents/skills"; do
-       for name in gstack-eval gstack-verify-result gstack-bug-fix gstack-reflect; do
+       for name in gstack-eval gstack-verify-result gstack-bug-fix gstack-reflect gstack-create-skill; do
          destination="$base/$name"
          if [ -e "$destination" ] || [ -L "$destination" ]; then
            printf 'Already exists: %s\n' "$destination" >&2
@@ -40,7 +41,7 @@ Each skill uses the directory-based Agent Skills format. Instructions use host c
      done
      mkdir -p "$HOME/.claude/skills" "$HOME/.agents/skills"
      for base in "$HOME/.claude/skills" "$HOME/.agents/skills"; do
-       for name in gstack-eval gstack-verify-result gstack-bug-fix gstack-reflect; do
+       for name in gstack-eval gstack-verify-result gstack-bug-fix gstack-reflect gstack-create-skill; do
          ln -s "$(pwd)/skills/$name" "$base/$name"
        done
      done
@@ -61,9 +62,13 @@ After a rename, pi uses the frontmatter name, not an old symlink's basename. An 
 | Codex CLI | `$gstack-eval <request>` | `$gstack-verify-result <request>` |
 | pi agent | `/skill:gstack-eval <request>` | `/skill:gstack-verify-result <request>` |
 
-All skills require explicit invocation. Invoke Bug Fix with `/gstack-bug-fix <request>` in Claude Code, `$gstack-bug-fix <request>` in Codex, or `/skill:gstack-bug-fix <request>` in pi. It reads `../gstack-verify-result/SKILL.md` directly, so install both sibling directories. Resolve relative references from the loaded skill's directory.
+All skills require explicit invocation. Invoke Bug Fix with `/gstack-bug-fix <request>` in Claude Code, `$gstack-bug-fix <request>` in Codex, or `/skill:gstack-bug-fix <request>` in pi. It depends on the sibling Verify Result workflow, so install both directories. Resolve relative references from the loaded skill's directory.
 
 Invoke Reflect with `/gstack-reflect`, `$gstack-reflect`, or `/skill:gstack-reflect` respectively. It reviews the current work and proposes changes. It waits for approval before edits and does not publish tickets or changes automatically.
+
+Invoke Create Skill with `/gstack-create-skill <request>`, `$gstack-create-skill <request>`, or `/skill:gstack-create-skill <request>` respectively. Name the purpose or existing target and intended hosts. It reuses an existing skill when appropriate and preserves its invocation policy.
+
+A sibling pointer is a workflow dependency, not portable permission. Claude Code's current documentation blocks autonomous manual-only invocation and prohibits a workaround that reproduces its steps. Follow the host's authorized invocation path. A blocked handoff needs explicit user permission; do not bypass it through file reads. Runtime support for these handoffs remains untested.
 
 Claude Code and pi use `disable-model-invocation: true` in `SKILL.md`. Codex uses `policy.allow_implicit_invocation: false` in `agents/openai.yaml`. These settings restrict automatic selection; they are not permission or sandbox controls.
 
@@ -102,6 +107,10 @@ These experimental references summarize useful methods from Matt Pocock's diagno
 
 Reflect can use the visible conversation when the host does not expose its current transcript. It must disclose evidence gaps. Keep private project details in project-local guidance rather than global skills.
 
+For approved substantive skill edits, Reflect hands the proposal to Create Skill when the host permits it. Create Skill handles authoring and local checks, then prepares an Eval comparison when warranted. Approved scope, host permission, and an existing run budget let the workflow continue without a duplicate approval request. Small wording corrections remain direct.
+
+The [authoring survey](docs/skill-authoring-survey.md) compares Cursor, Matt Pocock, Anthropic, and OpenAI guidance. Cursor's installed built-in source was unavailable. The creator is an original synthesis, not a recovered vendor implementation. Its [cases](evaluations/create-skill/cases.md) define initial static walkthroughs; no comparative agent evaluation ran.
+
 ## Repository layout
 
 ```text
@@ -122,6 +131,14 @@ skills/
     SKILL.md
     agents/openai.yaml
     references/proposal-template.md
+  gstack-create-skill/
+    SKILL.md
+    agents/openai.yaml
+    references/authoring-checks.md
+docs/
+  skill-authoring-survey.md
+evaluations/create-skill/
+  cases.md
 evaluations/verify-result/
   plan.md
   checks.py

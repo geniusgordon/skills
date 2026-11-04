@@ -67,7 +67,9 @@ Completion: concrete proposals and destinations presented; no skill changes befo
 
 Apply only the selected scope in the canonical source. Preserve unrelated user edits. Keep each meaning in one place; update linked instructions or metadata when the approved change requires it.
 
-Run available structural checks and a relevant local check. A wording change is not evidence of improved agent behavior. For substantive changes, propose an evaluation through the sibling `../gstack-eval/SKILL.md`; read that file directly if available. Obtain a run budget before extra model calls. If eval is absent, record the validation gap rather than invent success.
+For a substantive skill change, hand the approved proposal, evidence, destination, and success conditions to `../gstack-create-skill/SKILL.md`. Follow the host's invocation controls. Read and execute the workflow only when that handoff is permitted; never bypass a blocked call through file reads. If the creator is absent or blocked, report the gap and offer the approved direct edit with local checks instead. Small wording corrections remain direct.
+
+Run available structural checks and a relevant local check. A wording change is not evidence of improved agent behavior. The creator routes substantive evaluation to the sibling Eval workflow. Without the creator, propose the same evaluation through `../gstack-eval/SKILL.md` when permitted. Obtain a run budget before extra model calls. If eval is absent or blocked, record the validation gap rather than invent success.
 
 Report exact changed paths, checks actually run, remaining uncertainty, and any unselected proposals. Do not install, commit, push, or publish unless the user explicitly authorizes those actions.
 
