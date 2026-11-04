@@ -1,6 +1,7 @@
 ---
 name: eval
-description: Evaluate a skill or workflow change against the current baseline with matched tasks, isolated sessions, observable checks, and blinded review. Use when the user asks to evaluate, compare, or validate skill behavior before adoption.
+description: Compare a skill or workflow change against the baseline with matched tasks, isolated sessions, observable checks, and blinded review.
+disable-model-invocation: true
 license: MIT
 ---
 
