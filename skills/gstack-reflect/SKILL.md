@@ -45,7 +45,7 @@ Read each proposed target before accepting an edit. Prefer an existing skill use
 
 If clear guidance already covers the problem, reject duplicate prose. Propose a wording or placement change only when evidence shows the instruction is ambiguous or easy to miss.
 
-Route enforceable constraints to a type, lint, test, script, or metadata setting instead of more prose. Put project-specific commands and conventions in project-local guidance. Do not export private architecture or temporary paths into global skills.
+Route enforceable constraints to a type, lint, test, script, or metadata setting instead of more prose. If the evidence shows repeated navigation friction, missing information, tool overhead, context pressure, or preventable errors, read `references/environment-review.md` before choosing the destination. Put project-specific commands and conventions in project-local guidance. Do not export private architecture or temporary paths into global skills.
 
 Propose a new skill only when no existing target fits and the behavior needs its own invocation. Prefer deletion or a small replacement over another rule.
 

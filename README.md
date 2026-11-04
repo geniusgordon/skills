@@ -86,6 +86,12 @@ The skill requires independent sessions and matched project state. It uses avail
 
 Executable checks take priority over judge scores. Missing execution records limit process claims. A same-family judge or non-blinded review must appear as a limitation.
 
+## Conditional methods
+
+Bug Fix reads [hard-debug methods](skills/gstack-bug-fix/references/hard-debug.md) when causes remain uncertain or the trigger is intermittent. Reflect reads [environment-review methods](skills/gstack-reflect/references/environment-review.md) when session evidence points to tooling, navigation, or context friction.
+
+These experimental references summarize useful methods from Matt Pocock's diagnosing-bugs and retro skills. Small local comparisons confirmed reference access, but showed no correctness gain. They do not require the original skills to be installed.
+
 ## Improve skills through real work
 
 1. Use a workflow in your work project.

@@ -25,7 +25,7 @@ Completion: observed failure on the reported path, or an explicit blocker.
 
 ## 2. Establish the cause
 
-Trace the failing path through relevant callers, state, and boundaries. Choose a probe that distinguishes plausible causes. Change one experimental condition at a time; inspect runtime state when source alone is insufficient.
+Trace the failing path through relevant callers, state, and boundaries. If the trigger is intermittent, multiple causes remain plausible, or the first probe is inconclusive, read `references/hard-debug.md` before the next probe. Otherwise proceed with a focused check. Change one experimental condition at a time; inspect runtime state when source alone is insufficient.
 
 Identify the first incorrect operation and explain how it produces the symptom. For a lost response or retry, distinguish the operation's committed state from the caller's knowledge of it. Treat distinct operations and repeated attempts according to the project's contract.
 
