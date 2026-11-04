@@ -10,6 +10,7 @@ Each skill uses the directory-based Agent Skills format. Instructions use host c
 | --- | --- |
 | [eval](skills/eval/SKILL.md) | Compare a skill or workflow change against the current baseline before adoption. |
 | [verify-result](skills/verify-result/SKILL.md) | Manually verify observable results. Experimental; pilots show no correctness gain over the tested baseline. |
+| [bug-fix](skills/bug-fix/SKILL.md) | Manually reproduce, diagnose, fix, and verify a defect. Draft; requires the sibling verify-result skill. |
 
 ## Install locally
 
@@ -20,17 +21,30 @@ Each skill uses the directory-based Agent Skills format. Instructions use host c
    cd geniusgordon-skills
    ```
 
-2. From the repository root, link both skills into each host's personal location:
+2. From the repository root, link all skills into each host's personal location:
 
    ```sh
-   mkdir -p ~/.claude/skills ~/.agents/skills
-   for name in eval verify-result; do
-     ln -s "$(pwd)/skills/$name" "$HOME/.claude/skills/$name"
-     ln -s "$(pwd)/skills/$name" "$HOME/.agents/skills/$name"
-   done
+   (
+     set -eu
+     for base in "$HOME/.claude/skills" "$HOME/.agents/skills"; do
+       for name in eval verify-result bug-fix; do
+         destination="$base/$name"
+         if [ -e "$destination" ] || [ -L "$destination" ]; then
+           printf 'Already exists: %s\n' "$destination" >&2
+           exit 1
+         fi
+       done
+     done
+     mkdir -p "$HOME/.claude/skills" "$HOME/.agents/skills"
+     for base in "$HOME/.claude/skills" "$HOME/.agents/skills"; do
+       for name in eval verify-result bug-fix; do
+         ln -s "$(pwd)/skills/$name" "$base/$name"
+       done
+     done
+   )
    ```
 
-   These commands create links without replacing existing entries. If either destination exists, inspect it before you choose another name or replace it. Keep the checkout in place while the links are installed.
+   The block checks all destinations before it creates links. Existing entries, including dangling symlinks, stop installation. Inspect the reported entry before you choose another name or replace it. Do not run concurrent installations. Keep the checkout in place while the links are installed.
 
 Claude Code reads `~/.claude/skills/`. Codex CLI and pi read `~/.agents/skills/`. The checkout's `skills/` directory alone is not an automatic discovery location.
 
@@ -42,7 +56,9 @@ Start a new session after installation. In an existing pi session, use `/reload`
 | Codex CLI | `$eval <request>` | `$verify-result <request>` |
 | pi agent | `/skill:eval <request>` | `/skill:verify-result <request>` |
 
-Both skills require explicit invocation. Claude Code and pi use `disable-model-invocation: true` in `SKILL.md`. Codex uses `policy.allow_implicit_invocation: false` in `agents/openai.yaml`. These settings restrict automatic selection; they are not permission or sandbox controls.
+All skills require explicit invocation. Invoke Bug Fix with `/bug-fix <request>` in Claude Code, `$bug-fix <request>` in Codex, or `/skill:bug-fix <request>` in pi. It reads `../verify-result/SKILL.md` directly, so install both sibling directories. Resolve relative references from the loaded skill's directory.
+
+Claude Code and pi use `disable-model-invocation: true` in `SKILL.md`. Codex uses `policy.allow_implicit_invocation: false` in `agents/openai.yaml`. These settings restrict automatic selection; they are not permission or sandbox controls.
 
 Official host references:
 
@@ -87,6 +103,8 @@ Keep private run records outside version control. The repository ignores `report
 
 The [verify-result comparison plan](evaluations/verify-result/plan.md) uses local cases rather than ongoing product work. The [pilot summary](evaluations/verify-result/pilot-summary.md) records the observed limits. Manual installation supports further trials, not a claim of proven benefit. Exclude the proposed skill from baseline runs, even after installation.
 
+The [Bug Fix comparison plan](evaluations/bug-fix/plan.md) adds a calibrated lost-response/retry case. Run `python3 evaluations/bug-fix/calibrate.py` to check the fixture. No agent behavior comparison has run for Bug Fix.
+
 ## Scope
 
 This repository contains instructions, not an execution harness. It does not configure authentication, bypass permissions, or provide an automatic model-routing layer.
@@ -101,6 +119,6 @@ Those smoke checks preceded the manual-only settings. They do not establish the 
 
 The eval skill adapts [pstack's Eval playbook](https://github.com/cursor/plugins/blob/main/pstack/skills/poteto-mode/playbooks/eval.md) and [Arena skill](https://github.com/cursor/plugins/blob/main/pstack/skills/arena/SKILL.md) by Lauren Tan.
 
-Verify Result adapts pstack's [Prove It Works principle](https://github.com/cursor/plugins/blob/main/pstack/skills/principle-prove-it-works/SKILL.md).
+Verify Result adapts pstack's [Prove It Works principle](https://github.com/cursor/plugins/blob/main/pstack/skills/principle-prove-it-works/SKILL.md). Bug Fix adapts its [Bug fix playbook](https://github.com/cursor/plugins/blob/main/pstack/skills/poteto-mode/playbooks/bug-fix.md).
 
 The [MIT license](LICENSE) retains the upstream copyright and permission notice. Eval adaptation details appear in [the protocol](skills/eval/references/protocol.md#attribution).
