@@ -1,4 +1,6 @@
-# Skills
+# gstack
+
+The `gstack-` skill prefix identifies this collection from `geniusgordon/skills`. It does not use a host-specific plugin namespace.
 
 Portable engineering skills for Claude Code, Codex CLI, and pi agent.
 
@@ -8,10 +10,10 @@ Each skill uses the directory-based Agent Skills format. Instructions use host c
 
 | Skill | Purpose |
 | --- | --- |
-| [eval](skills/eval/SKILL.md) | Compare a skill or workflow change against the current baseline before adoption. |
-| [verify-result](skills/verify-result/SKILL.md) | Manually verify observable results. Experimental; pilots show no correctness gain over the tested baseline. |
-| [bug-fix](skills/bug-fix/SKILL.md) | Manually reproduce, diagnose, fix, and verify a defect. Draft; requires the sibling verify-result skill. |
-| [reflect](skills/reflect/SKILL.md) | Extract lessons from real work and propose targeted skill edits. Changes require approval. |
+| [eval](skills/gstack-eval/SKILL.md) | Compare a skill or workflow change against the current baseline before adoption. |
+| [verify-result](skills/gstack-verify-result/SKILL.md) | Manually verify observable results. Experimental; pilots show no correctness gain over the tested baseline. |
+| [bug-fix](skills/gstack-bug-fix/SKILL.md) | Manually reproduce, diagnose, fix, and verify a defect. Draft; requires the sibling verify-result skill. |
+| [reflect](skills/gstack-reflect/SKILL.md) | Extract lessons from real work and propose targeted skill edits. Changes require approval. |
 
 ## Install locally
 
@@ -28,7 +30,7 @@ Each skill uses the directory-based Agent Skills format. Instructions use host c
    (
      set -eu
      for base in "$HOME/.claude/skills" "$HOME/.agents/skills"; do
-       for name in eval verify-result bug-fix reflect; do
+       for name in gstack-eval gstack-verify-result gstack-bug-fix gstack-reflect; do
          destination="$base/$name"
          if [ -e "$destination" ] || [ -L "$destination" ]; then
            printf 'Already exists: %s\n' "$destination" >&2
@@ -38,7 +40,7 @@ Each skill uses the directory-based Agent Skills format. Instructions use host c
      done
      mkdir -p "$HOME/.claude/skills" "$HOME/.agents/skills"
      for base in "$HOME/.claude/skills" "$HOME/.agents/skills"; do
-       for name in eval verify-result bug-fix reflect; do
+       for name in gstack-eval gstack-verify-result gstack-bug-fix gstack-reflect; do
          ln -s "$(pwd)/skills/$name" "$base/$name"
        done
      done
@@ -51,15 +53,17 @@ Claude Code reads `~/.claude/skills/`. Codex CLI and pi read `~/.agents/skills/`
 
 Start a new session after installation. In an existing pi session, use `/reload`.
 
+After a rename, pi uses the frontmatter name, not an old symlink's basename. An old installed path is not a portable command alias. Use the `gstack-` commands below.
+
 | Host | Eval | Verify Result |
 | --- | --- | --- |
-| Claude Code | `/eval <request>` | `/verify-result <request>` |
-| Codex CLI | `$eval <request>` | `$verify-result <request>` |
-| pi agent | `/skill:eval <request>` | `/skill:verify-result <request>` |
+| Claude Code | `/gstack-eval <request>` | `/gstack-verify-result <request>` |
+| Codex CLI | `$gstack-eval <request>` | `$gstack-verify-result <request>` |
+| pi agent | `/skill:gstack-eval <request>` | `/skill:gstack-verify-result <request>` |
 
-All skills require explicit invocation. Invoke Bug Fix with `/bug-fix <request>` in Claude Code, `$bug-fix <request>` in Codex, or `/skill:bug-fix <request>` in pi. It reads `../verify-result/SKILL.md` directly, so install both sibling directories. Resolve relative references from the loaded skill's directory.
+All skills require explicit invocation. Invoke Bug Fix with `/gstack-bug-fix <request>` in Claude Code, `$gstack-bug-fix <request>` in Codex, or `/skill:gstack-bug-fix <request>` in pi. It reads `../gstack-verify-result/SKILL.md` directly, so install both sibling directories. Resolve relative references from the loaded skill's directory.
 
-Invoke Reflect with `/reflect`, `$reflect`, or `/skill:reflect` respectively. It reviews the current work and proposes changes. It waits for approval before edits and does not publish tickets or changes automatically.
+Invoke Reflect with `/gstack-reflect`, `$gstack-reflect`, or `/skill:gstack-reflect` respectively. It reviews the current work and proposes changes. It waits for approval before edits and does not publish tickets or changes automatically.
 
 Claude Code and pi use `disable-model-invocation: true` in `SKILL.md`. Codex uses `policy.allow_implicit_invocation: false` in `agents/openai.yaml`. These settings restrict automatic selection; they are not permission or sandbox controls.
 
@@ -96,19 +100,19 @@ Reflect can use the visible conversation when the host does not expose its curre
 
 ```text
 skills/
-  eval/
+  gstack-eval/
     SKILL.md
     agents/openai.yaml
     references/
       protocol.md
       report-template.md
-  verify-result/
+  gstack-verify-result/
     SKILL.md
     agents/openai.yaml
-  bug-fix/
+  gstack-bug-fix/
     SKILL.md
     agents/openai.yaml
-  reflect/
+  gstack-reflect/
     SKILL.md
     agents/openai.yaml
     references/proposal-template.md
@@ -141,4 +145,4 @@ The eval skill adapts [pstack's Eval playbook](https://github.com/cursor/plugins
 
 Verify Result adapts pstack's [Prove It Works principle](https://github.com/cursor/plugins/blob/main/pstack/skills/principle-prove-it-works/SKILL.md). Bug Fix adapts its [Bug fix playbook](https://github.com/cursor/plugins/blob/main/pstack/skills/poteto-mode/playbooks/bug-fix.md). Reflect adapts its [Reflect skill](https://github.com/cursor/plugins/blob/main/pstack/skills/reflect/SKILL.md).
 
-The [MIT license](LICENSE) retains the upstream copyright and permission notice. Eval adaptation details appear in [the protocol](skills/eval/references/protocol.md#attribution).
+The [MIT license](LICENSE) retains the upstream copyright and permission notice. Eval adaptation details appear in [the protocol](skills/gstack-eval/references/protocol.md#attribution).

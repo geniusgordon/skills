@@ -1,5 +1,5 @@
 ---
-name: eval
+name: gstack-eval
 description: Compare a skill or workflow change against the baseline with matched tasks, isolated sessions, observable checks, and blinded review.
 disable-model-invocation: true
 license: MIT

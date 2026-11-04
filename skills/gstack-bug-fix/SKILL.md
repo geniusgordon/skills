@@ -1,5 +1,5 @@
 ---
-name: bug-fix
+name: gstack-bug-fix
 description: Reproduce a reported defect, establish its cause, apply the smallest supported fix, and verify the original behavior.
 disable-model-invocation: true
 license: MIT
@@ -7,7 +7,7 @@ license: MIT
 
 # Bug Fix
 
-Own the diagnosis, change, and evidence. Use the host's available tools. This workflow requires the sibling `verify-result` skill; read `../verify-result/SKILL.md` directly in step 4. Manual-only settings do not prevent ordinary file reads.
+Own the diagnosis, change, and evidence. Use the host's available tools. This workflow requires the sibling `gstack-verify-result` skill; read `../gstack-verify-result/SKILL.md` directly in step 4. Manual-only settings do not prevent ordinary file reads.
 
 Keep a short checklist with one active step. Use disposable data and the current project surface. Ask before production writes, destructive operations, or extra paid services. Redact secrets in evidence.
 
@@ -47,7 +47,7 @@ Completion: a scoped patch tied to the observed cause, with a failing-before che
 
 ## 4. Verify and report
 
-Read `../verify-result/SKILL.md` and follow its verification and verdict rules. If that file is unavailable, stop before declaring success and report the missing dependency.
+Read `../gstack-verify-result/SKILL.md` and follow its verification and verdict rules. If that file is unavailable, stop before declaring success and report the missing dependency.
 
 Rerun the original reproduction against the final artifact on the same surface. Run the regression check and relevant unchanged-behavior checks. A lower-level test supplements the original reproduction; it does not silently replace it.
 

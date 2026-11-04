@@ -45,7 +45,7 @@ Use three variants when the budget permits:
 
 A versus C measures the combined workflow. B versus C isolates the added diagnosis and reproduction procedure. A two-arm A/C pilot is cheaper but cannot attribute a gain to Bug Fix alone.
 
-In C, make the complete `skills/bug-fix` and `skills/verify-result` sibling layout available. Preserve the relative dependency. Disable ambient discovery in all variants, then supply only the assigned instructions. Record actual file reads. This evaluates explicit execution; test command discovery separately.
+In C, make the complete `skills/gstack-bug-fix` and `skills/gstack-verify-result` sibling layout available. Preserve the relative dependency. Disable ambient discovery in all variants, then supply only the assigned instructions. Record actual file reads. This evaluates explicit execution; test command discovery separately.
 
 ## Rubric and decision
 

@@ -1,5 +1,5 @@
 ---
-name: verify-result
+name: gstack-verify-result
 description: Verify a task's observable result with direct checks and report verified, failed, or unverified evidence.
 disable-model-invocation: true
 license: MIT
