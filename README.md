@@ -11,6 +11,7 @@ Each skill uses the directory-based Agent Skills format. Instructions use host c
 | [eval](skills/eval/SKILL.md) | Compare a skill or workflow change against the current baseline before adoption. |
 | [verify-result](skills/verify-result/SKILL.md) | Manually verify observable results. Experimental; pilots show no correctness gain over the tested baseline. |
 | [bug-fix](skills/bug-fix/SKILL.md) | Manually reproduce, diagnose, fix, and verify a defect. Draft; requires the sibling verify-result skill. |
+| [reflect](skills/reflect/SKILL.md) | Extract lessons from real work and propose targeted skill edits. Changes require approval. |
 
 ## Install locally
 
@@ -27,7 +28,7 @@ Each skill uses the directory-based Agent Skills format. Instructions use host c
    (
      set -eu
      for base in "$HOME/.claude/skills" "$HOME/.agents/skills"; do
-       for name in eval verify-result bug-fix; do
+       for name in eval verify-result bug-fix reflect; do
          destination="$base/$name"
          if [ -e "$destination" ] || [ -L "$destination" ]; then
            printf 'Already exists: %s\n' "$destination" >&2
@@ -37,7 +38,7 @@ Each skill uses the directory-based Agent Skills format. Instructions use host c
      done
      mkdir -p "$HOME/.claude/skills" "$HOME/.agents/skills"
      for base in "$HOME/.claude/skills" "$HOME/.agents/skills"; do
-       for name in eval verify-result bug-fix; do
+       for name in eval verify-result bug-fix reflect; do
          ln -s "$(pwd)/skills/$name" "$base/$name"
        done
      done
@@ -57,6 +58,8 @@ Start a new session after installation. In an existing pi session, use `/reload`
 | pi agent | `/skill:eval <request>` | `/skill:verify-result <request>` |
 
 All skills require explicit invocation. Invoke Bug Fix with `/bug-fix <request>` in Claude Code, `$bug-fix <request>` in Codex, or `/skill:bug-fix <request>` in pi. It reads `../verify-result/SKILL.md` directly, so install both sibling directories. Resolve relative references from the loaded skill's directory.
+
+Invoke Reflect with `/reflect`, `$reflect`, or `/skill:reflect` respectively. It reviews the current work and proposes changes. It waits for approval before edits and does not publish tickets or changes automatically.
 
 Claude Code and pi use `disable-model-invocation: true` in `SKILL.md`. Codex uses `policy.allow_implicit_invocation: false` in `agents/openai.yaml`. These settings restrict automatic selection; they are not permission or sandbox controls.
 
@@ -79,6 +82,16 @@ The skill requires independent sessions and matched project state. It uses avail
 
 Executable checks take priority over judge scores. Missing execution records limit process claims. A same-family judge or non-blinded review must appear as a limitation.
 
+## Improve skills through real work
+
+1. Use a workflow in your work project.
+2. Invoke Reflect after a correction, failure, or useful result.
+3. Review the evidence and exact proposed changes.
+4. Approve selected changes in the canonical skill checkout.
+5. Run local checks; use Eval when a behavior comparison merits extra model calls.
+
+Reflect can use the visible conversation when the host does not expose its current transcript. It must disclose evidence gaps. Keep private project details in project-local guidance rather than global skills.
+
 ## Repository layout
 
 ```text
@@ -92,6 +105,13 @@ skills/
   verify-result/
     SKILL.md
     agents/openai.yaml
+  bug-fix/
+    SKILL.md
+    agents/openai.yaml
+  reflect/
+    SKILL.md
+    agents/openai.yaml
+    references/proposal-template.md
 evaluations/verify-result/
   plan.md
   checks.py
@@ -119,6 +139,6 @@ Those smoke checks preceded the manual-only settings. They do not establish the 
 
 The eval skill adapts [pstack's Eval playbook](https://github.com/cursor/plugins/blob/main/pstack/skills/poteto-mode/playbooks/eval.md) and [Arena skill](https://github.com/cursor/plugins/blob/main/pstack/skills/arena/SKILL.md) by Lauren Tan.
 
-Verify Result adapts pstack's [Prove It Works principle](https://github.com/cursor/plugins/blob/main/pstack/skills/principle-prove-it-works/SKILL.md). Bug Fix adapts its [Bug fix playbook](https://github.com/cursor/plugins/blob/main/pstack/skills/poteto-mode/playbooks/bug-fix.md).
+Verify Result adapts pstack's [Prove It Works principle](https://github.com/cursor/plugins/blob/main/pstack/skills/principle-prove-it-works/SKILL.md). Bug Fix adapts its [Bug fix playbook](https://github.com/cursor/plugins/blob/main/pstack/skills/poteto-mode/playbooks/bug-fix.md). Reflect adapts its [Reflect skill](https://github.com/cursor/plugins/blob/main/pstack/skills/reflect/SKILL.md).
 
 The [MIT license](LICENSE) retains the upstream copyright and permission notice. Eval adaptation details appear in [the protocol](skills/eval/references/protocol.md#attribution).
