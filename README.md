@@ -15,6 +15,7 @@ Each skill uses the directory-based Agent Skills format. Instructions use host c
 | [bug-fix](skills/gstack-bug-fix/SKILL.md) | Manually reproduce, diagnose, fix, and verify a defect. Draft; requires the sibling verify-result skill. |
 | [reflect](skills/gstack-reflect/SKILL.md) | Extract lessons from real work and propose targeted skill edits. Changes require approval. |
 | [create-skill](skills/gstack-create-skill/SKILL.md) | Create or update a focused skill, check its artifact, and route warranted behavior comparisons to Eval. Draft. |
+| [plan](skills/gstack-plan/SKILL.md) | Ground a task, settle its design, and write a verifiable plan. Stops before production implementation. Draft. |
 
 ## Install locally
 
@@ -31,7 +32,7 @@ Each skill uses the directory-based Agent Skills format. Instructions use host c
    (
      set -eu
      for base in "$HOME/.claude/skills" "$HOME/.agents/skills"; do
-       for name in gstack-eval gstack-verify-result gstack-bug-fix gstack-reflect gstack-create-skill; do
+       for name in gstack-eval gstack-verify-result gstack-bug-fix gstack-reflect gstack-create-skill gstack-plan; do
          destination="$base/$name"
          if [ -e "$destination" ] || [ -L "$destination" ]; then
            printf 'Already exists: %s\n' "$destination" >&2
@@ -41,7 +42,7 @@ Each skill uses the directory-based Agent Skills format. Instructions use host c
      done
      mkdir -p "$HOME/.claude/skills" "$HOME/.agents/skills"
      for base in "$HOME/.claude/skills" "$HOME/.agents/skills"; do
-       for name in gstack-eval gstack-verify-result gstack-bug-fix gstack-reflect gstack-create-skill; do
+       for name in gstack-eval gstack-verify-result gstack-bug-fix gstack-reflect gstack-create-skill gstack-plan; do
          ln -s "$(pwd)/skills/$name" "$base/$name"
        done
      done
@@ -67,6 +68,8 @@ All skills require explicit invocation. Invoke Bug Fix with `/gstack-bug-fix <re
 Invoke Reflect with `/gstack-reflect`, `$gstack-reflect`, or `/skill:gstack-reflect` respectively. It reviews the current work and proposes changes. It waits for approval before edits and does not publish tickets or changes automatically.
 
 Invoke Create Skill with `/gstack-create-skill <request>`, `$gstack-create-skill <request>`, or `/skill:gstack-create-skill <request>` respectively. Name the purpose or existing target and intended hosts. It reuses an existing skill when appropriate and preserves its invocation policy.
+
+Invoke Plan with `/gstack-plan <request>`, `$gstack-plan <request>`, or `/skill:gstack-plan <request>` respectively. It grounds the project, compares designs when needed, and writes the plan using the project's artifact convention. It does not implement the plan.
 
 A sibling pointer is a workflow dependency, not portable permission. Claude Code's current documentation blocks autonomous manual-only invocation and prohibits a workaround that reproduces its steps. Follow the host's authorized invocation path. A blocked handoff needs explicit user permission; do not bypass it through file reads. Runtime support for these handoffs remains untested.
 
@@ -95,7 +98,9 @@ Executable checks take priority over judge scores. Missing execution records lim
 
 Bug Fix reads [hard-debug methods](skills/gstack-bug-fix/references/hard-debug.md) when causes remain uncertain or the trigger is intermittent. Reflect reads [environment-review methods](skills/gstack-reflect/references/environment-review.md) when session evidence points to tooling, navigation, or context friction.
 
-These experimental references summarize useful methods from Matt Pocock's diagnosing-bugs and retro skills. Small local comparisons confirmed reference access, but showed no correctness gain. They do not require the original skills to be installed.
+Plan reads [prototype methods](skills/gstack-plan/references/prototype.md) only when a safe empirical probe can change the design. It uses isolated scratch state, preserves evidence, and stops before production implementation. Arena and Handoff are not dependencies. Its [five cases](evaluations/plan/cases.md) are static walkthroughs; no runtime or comparative evaluation ran for Plan.
+
+The Bug Fix and Reflect references summarize useful methods from Matt Pocock's diagnosing-bugs and retro skills. Small local comparisons confirmed reference access, but showed no correctness gain. They do not require the original skills to be installed.
 
 ## Improve skills through real work
 
@@ -109,7 +114,7 @@ Reflect can use the visible conversation when the host does not expose its curre
 
 For approved substantive skill edits, Reflect hands the proposal to Create Skill when the host permits it. Create Skill handles authoring and local checks, then prepares an Eval comparison when warranted. Approved scope, host permission, and an existing run budget let the workflow continue without a duplicate approval request. Small wording corrections remain direct.
 
-The [authoring survey](docs/skill-authoring-survey.md) compares Cursor, Matt Pocock, Anthropic, and OpenAI guidance. Cursor's installed built-in source was unavailable. The creator is an original synthesis, not a recovered vendor implementation. Its [cases](evaluations/create-skill/cases.md) define initial static walkthroughs; no comparative agent evaluation ran.
+The [authoring survey](docs/skill-authoring-survey.md) compares Cursor, Matt Pocock, Anthropic, and OpenAI guidance. Cursor's installed built-in source was unavailable. The creator is an original synthesis, not a recovered vendor implementation. Its [cases](evaluations/create-skill/cases.md) define initial static walkthroughs. A later local ten-candidate screening plus one blind judge was inconclusive: no correctness improvement was established, and measurement defects limit the comparison. Private records remain under ignored `reports/`.
 
 ## Repository layout
 
@@ -135,9 +140,15 @@ skills/
     SKILL.md
     agents/openai.yaml
     references/authoring-checks.md
+  gstack-plan/
+    SKILL.md
+    agents/openai.yaml
+    references/prototype.md
 docs/
   skill-authoring-survey.md
 evaluations/create-skill/
+  cases.md
+evaluations/plan/
   cases.md
 evaluations/verify-result/
   plan.md
@@ -167,5 +178,7 @@ Those smoke checks preceded the manual-only settings. They do not establish the 
 The eval skill adapts [pstack's Eval playbook](https://github.com/cursor/plugins/blob/main/pstack/skills/poteto-mode/playbooks/eval.md) and [Arena skill](https://github.com/cursor/plugins/blob/main/pstack/skills/arena/SKILL.md) by Lauren Tan.
 
 Verify Result adapts pstack's [Prove It Works principle](https://github.com/cursor/plugins/blob/main/pstack/skills/principle-prove-it-works/SKILL.md). Bug Fix adapts its [Bug fix playbook](https://github.com/cursor/plugins/blob/main/pstack/skills/poteto-mode/playbooks/bug-fix.md). Reflect adapts its [Reflect skill](https://github.com/cursor/plugins/blob/main/pstack/skills/reflect/SKILL.md).
+
+Plan adapts pstack's [design guide](https://github.com/cursor/plugins/blob/main/pstack/docs/guide/04-design.md), [Architect skill](https://github.com/cursor/plugins/blob/main/pstack/skills/architect/SKILL.md), [Multi-phase plan](https://github.com/cursor/plugins/blob/main/pstack/skills/poteto-mode/playbooks/multi-phase-plan.md), and [Prototype playbook](https://github.com/cursor/plugins/blob/main/pstack/skills/poteto-mode/playbooks/prototype.md). It removes automatic implementation, mandatory multi-model design, and fixed verification lanes.
 
 The [MIT license](LICENSE) retains the upstream copyright and permission notice. Eval adaptation details appear in [the protocol](skills/gstack-eval/references/protocol.md#attribution).
