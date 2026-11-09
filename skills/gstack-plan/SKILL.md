@@ -39,7 +39,7 @@ Write the caller's usage or user journey first. Derive the data shape, interface
 
 Compare structurally different alternatives when the choice matters. Explain rejected alternatives and accepted tradeoffs; do not invent contenders for an obvious design. A local comparison is not independent model agreement.
 
-For an empirical uncertainty that can change the design, read `references/prototype.md` before a probe. Use its observations to decide, or retain the uncertainty as a named execution gate. Prototypes are optional, disposable evidence, not production code.
+For an empirical uncertainty that can change the design, read `references/prototype.md` before a small planning probe. Use its observations to decide, or retain the uncertainty as a named execution gate. A broader standalone experiment needs a separate authorized invocation; no Prototype sibling is required for Plan. Scratch probes are optional evidence, not production code.
 
 Multiple candidates or an Arena may help a consequential choice, but require available host capabilities, authorization, and a bounded budget. No absent sibling skill blocks local design. Follow host invocation controls; do not bypass a blocked call through file reads.
 

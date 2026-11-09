@@ -16,7 +16,7 @@ Static walkthrough: steps 1-3 establish scope, current callers, and design. Step
 
 Request: plan an import pipeline. Determine whether the installed parser handles empty records with a small offline probe using copied synthetic input. Limit the probe to 30 seconds, no installs or network.
 
-Expected: read the conditional prototype reference; define the observation; use isolated scratch state and the existing parser. Record output and limits, clean up owned resources, retain evidence, and feed the result into the plan. Do not alter production code or claim broad performance gains.
+Expected: read the conditional planning adapter; define the observation; use isolated scratch state and the existing parser. Record output and limits, clean up owned resources, retain evidence, and feed the result into the plan. Do not alter production code or claim broad performance gains. This bounded local probe works without a Prototype sibling. An expanded experiment or blocked standalone invocation remains a named gate, never a direct-read bypass.
 
 Static walkthrough: step 3 reaches the reference only because the question can change the design. The reference bounds the probe and preserves evidence. Steps 4-5 record the result and stop.
 

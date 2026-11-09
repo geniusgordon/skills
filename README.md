@@ -18,6 +18,7 @@ Each skill uses the directory-based Agent Skills format. Instructions use host c
 | [plan](skills/gstack-plan/SKILL.md) | Ground a task, settle its design, and write a verifiable plan. Stops before production implementation. Draft. |
 | [arena](skills/gstack-arena/SKILL.md) | Compare independent candidates, select and synthesize an artifact, then verify it within an approved budget. Draft. |
 | [handoff](skills/gstack-handoff/SKILL.md) | Save a task checkpoint or reconcile its resume point without implicit execution permission. Draft. |
+| [prototype](skills/gstack-prototype/SKILL.md) | Answer a bounded empirical question with a disposable experiment, retained evidence, and scoped cleanup. Draft. |
 
 ## Install locally
 
@@ -34,7 +35,7 @@ Each skill uses the directory-based Agent Skills format. Instructions use host c
    (
      set -eu
      for base in "$HOME/.claude/skills" "$HOME/.agents/skills"; do
-       for name in gstack-eval gstack-verify-result gstack-bug-fix gstack-reflect gstack-create-skill gstack-plan gstack-arena gstack-handoff; do
+       for name in gstack-eval gstack-verify-result gstack-bug-fix gstack-reflect gstack-create-skill gstack-plan gstack-arena gstack-handoff gstack-prototype; do
          destination="$base/$name"
          if [ -e "$destination" ] || [ -L "$destination" ]; then
            printf 'Already exists: %s\n' "$destination" >&2
@@ -44,7 +45,7 @@ Each skill uses the directory-based Agent Skills format. Instructions use host c
      done
      mkdir -p "$HOME/.claude/skills" "$HOME/.agents/skills"
      for base in "$HOME/.claude/skills" "$HOME/.agents/skills"; do
-       for name in gstack-eval gstack-verify-result gstack-bug-fix gstack-reflect gstack-create-skill gstack-plan gstack-arena gstack-handoff; do
+       for name in gstack-eval gstack-verify-result gstack-bug-fix gstack-reflect gstack-create-skill gstack-plan gstack-arena gstack-handoff gstack-prototype; do
          ln -s "$(pwd)/skills/$name" "$base/$name"
        done
      done
@@ -77,6 +78,8 @@ Invoke Arena with `/gstack-arena <request>`, `$gstack-arena <request>`, or `/ski
 
 Invoke Handoff with `/gstack-handoff checkpoint <task and note path>` or `/gstack-handoff resume <note path>` in Claude Code. Use `$gstack-handoff` in Codex or `/skill:gstack-handoff` in pi with the same arguments. Resume-only requests identify the next action without starting implementation. A live checkpoint is not a clean pause or a durable copy of dirty code.
 
+Invoke Prototype with `/gstack-prototype <question and limits>`, `$gstack-prototype <question and limits>`, or `/skill:gstack-prototype <question and limits>` respectively. It operates a scoped scratch experiment and returns observations, limitations, and cleanup state, not production code. It needs no full plan or multiple candidates.
+
 A sibling pointer is a workflow dependency, not portable permission. Claude Code's current documentation blocks autonomous manual-only invocation and prohibits a workaround that reproduces its steps. Follow the host's authorized invocation path. A blocked handoff needs explicit user permission; do not bypass it through file reads. Runtime support for these handoffs remains untested.
 
 Claude Code and pi use `disable-model-invocation: true` in `SKILL.md`. Codex uses `policy.allow_implicit_invocation: false` in `agents/openai.yaml`. These settings restrict automatic selection; they are not permission or sandbox controls.
@@ -104,7 +107,9 @@ Executable checks take priority over judge scores. Missing execution records lim
 
 Bug Fix reads [hard-debug methods](skills/gstack-bug-fix/references/hard-debug.md) when causes remain uncertain or the trigger is intermittent. Reflect reads [environment-review methods](skills/gstack-reflect/references/environment-review.md) when session evidence points to tooling, navigation, or context friction.
 
-Plan reads [prototype methods](skills/gstack-plan/references/prototype.md) only when a safe empirical probe can change the design. It uses isolated scratch state, preserves evidence, and stops before production implementation. Arena and Handoff are not dependencies. Its [five cases](evaluations/plan/cases.md) are static walkthroughs; no runtime or comparative evaluation ran for Plan.
+Plan reads a [planning adapter](skills/gstack-plan/references/prototype.md) for small safe empirical probes that can change its design. Standalone Prototype owns the complete experiment method. Plan keeps its bounded local probe capability without a Prototype, Arena, or Handoff dependency; broader experiments require separate permitted invocation. Its [five cases](evaluations/plan/cases.md) define the wider scope; the empirical-fork regression described below ran locally, but no comparative evaluation established Plan's benefit.
+
+Prototype's [five cases](evaluations/prototype/cases.md) cover parser behavior, operated UI, timing limits, unavailable environments, and failed-attempt cleanup. One local Pi parser smoke executed ten synthetic inputs, retained evidence, and removed owned scratch state. A separate Plan regression executed seven inputs without a Prototype sibling and stopped at a plan. Source bytes remained unchanged. UI, failure cleanup, native commands, cross-host behavior, and comparative benefit remain unverified.
 
 Arena uses a [run record](skills/gstack-arena/references/run-record.md) for scope, attempts, selection, and final evidence. Its [five cases](evaluations/arena/cases.md) cover design/code candidates, dropouts, missing grants/judges, and synthesis failures. One local design-only smoke completed two same-model candidates and a main-agent synthesis; no judge, native skill-command trial, dropout, code-worktree trial, or comparative benefit was established.
 
@@ -162,6 +167,9 @@ skills/
     SKILL.md
     agents/openai.yaml
     references/checkpoint-template.md
+  gstack-prototype/
+    SKILL.md
+    agents/openai.yaml
 docs/
   skill-authoring-survey.md
 evaluations/create-skill/
@@ -171,6 +179,8 @@ evaluations/plan/
 evaluations/arena/
   cases.md
 evaluations/handoff/
+  cases.md
+evaluations/prototype/
   cases.md
 evaluations/verify-result/
   plan.md
@@ -204,5 +214,7 @@ Verify Result adapts pstack's [Prove It Works principle](https://github.com/curs
 Plan adapts pstack's [design guide](https://github.com/cursor/plugins/blob/main/pstack/docs/guide/04-design.md), [Architect skill](https://github.com/cursor/plugins/blob/main/pstack/skills/architect/SKILL.md), [Multi-phase plan](https://github.com/cursor/plugins/blob/main/pstack/skills/poteto-mode/playbooks/multi-phase-plan.md), and [Prototype playbook](https://github.com/cursor/plugins/blob/main/pstack/skills/poteto-mode/playbooks/prototype.md). It removes automatic implementation, mandatory multi-model design, and fixed verification lanes.
 
 Arena adapts pstack's [Arena skill](https://github.com/cursor/plugins/blob/main/pstack/skills/arena/SKILL.md). Handoff adapts its [Pause safely](https://github.com/cursor/plugins/blob/main/pstack/skills/poteto-mode/playbooks/pause-safely.md) and [Session pickup](https://github.com/cursor/plugins/blob/main/pstack/skills/poteto-mode/playbooks/session-pickup.md) playbooks. They retain evidence-based selection and state recovery without fixed models or automatic lifecycle actions.
+
+Standalone Prototype also adapts pstack's [Prototype playbook](https://github.com/cursor/plugins/blob/main/pstack/skills/poteto-mode/playbooks/prototype.md). It owns the full experiment method, while Plan retains a small planning-specific adapter. Neither automatically promotes scratch code to production.
 
 The [MIT license](LICENSE) retains the upstream copyright and permission notice. Eval adaptation details appear in [the protocol](skills/gstack-eval/references/protocol.md#attribution).
